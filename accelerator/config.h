@@ -78,6 +78,8 @@ extern "C" {
 #define RESULT_SET_LIMIT \
   100 /**< The maximun returned transaction object number when querying transaction object by tag */
 #define FILE_PATH_SIZE 128
+#define DOMAIN_SOCKET "/tmp/tangle-accelerator-domain-socket"
+#define START_NOTIFICATION "tangle-accelerator-started"
 
 /** struct type of accelerator configuration */
 typedef struct ta_config_s {
@@ -223,6 +225,8 @@ void ta_core_destroy(ta_core_t* const core);
  */
 status_t ta_set_iota_client_service(iota_client_service_t* service, char const* host, uint16_t port,
                                     char const* const ca_pem);
+
+void notify_initialization();
 
 #ifdef __cplusplus
 }

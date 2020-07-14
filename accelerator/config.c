@@ -9,6 +9,9 @@
 #include "config.h"
 #include <errno.h>
 #include <limits.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
 #include "utils/macros.h"
 #include "yaml.h"
 
@@ -516,4 +519,30 @@ void ta_core_destroy(ta_core_t* const core) {
   logger_destroy_client_extended();
   logger_destroy_json_serializer();
   br_logger_release();
+}
+
+void notify_initialization() {
+  int connect_fd;
+  const int notify_len = strlen(START_NOTIFICATION);
+  char snd_buf[1024];
+  static struct sockaddr_un srv_addr;
+
+  // Create UNIX domain socket
+  connect_fd = socket(PF_UNIX, SOCK_STREAM, 0);
+  if (connect_fd < 0) {
+    ta_log_error("Can't create communication socket.\n");
+  }
+  srv_addr.sun_family = AF_UNIX;
+  strncpy(srv_addr.sun_path, DOMAIN_SOCKET, strlen(DOMAIN_SOCKET));
+
+  // Connect to UNIX domain socket server
+  if (connect(connect_fd, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == -1) {
+    ta_log_error("Can't connect to UNIX domain socket server.\n");
+    close(connect_fd);
+  }
+  memset(snd_buf, 0, notify_len);
+  strncpy(snd_buf, START_NOTIFICATION, notify_len);
+  // send info server
+  write(connect_fd, snd_buf, sizeof(snd_buf));
+  close(connect_fd);
 }

@@ -59,7 +59,7 @@ check_env() {
 
 # Parse command line arguments
 get_cli_args () {
-    sleep_time=$1
+    unix_domain_socket=$1
     shift
     remaining_args=$@ # Get the remaining arguments
 }
