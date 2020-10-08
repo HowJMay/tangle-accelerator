@@ -378,6 +378,8 @@ void* health_track(void* arg) {
       }
     }
 
+    core->cache.last_period_execute_time = time(NULL);
+    ta_log_debug("health_track sleeps\n");
     sleep(core->ta_conf.health_track_period);
   }
   return ((void*)NULL);
